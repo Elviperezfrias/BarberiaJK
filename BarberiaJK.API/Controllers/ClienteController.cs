@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace BarberiaJK.API.Controllers
-{
+{//GET: api/Cliente
     [Route("api/[controller]")]
     [ApiController]
     public class ClienteController : ControllerBase

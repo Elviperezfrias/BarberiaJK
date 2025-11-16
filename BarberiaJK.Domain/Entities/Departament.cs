@@ -1,4 +1,5 @@
 ﻿namespace BarberiaJK.Domain.Entities
+// DEPARTAMENT 
 {
     public class Departament
     {

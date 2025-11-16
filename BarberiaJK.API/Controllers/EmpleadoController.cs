@@ -76,14 +76,7 @@ namespace BarberiaIX.API.Controllers
         public async Task<IActionResult> PutEmpleado(int id, Empleado empleado)
         {
             if (id != empleado.IdEmpleado)
-            {
-                return BadRequest(new { message = "El ID no coincide" });
-            }
-
-            if (empleado.PorcentajeComision < 0 || empleado.PorcentajeComision > 100)
-            {
-                return BadRequest(new { message = "El porcentaje de comisión debe estar entre 0 y 100" });
-            }
+                return BadRequest("El id no coincide.");
 
             _context.Entry(empleado).State = EntityState.Modified;
 
@@ -93,11 +86,8 @@ namespace BarberiaIX.API.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!EmpleadoExists(id))
-                {
-                    return NotFound(new { message = $"Empleado con ID {id} no encontrado" });
-                }
-                throw;
+                if (!_context.Empleados.Any(e => e.IdEmpleado == id))
+                    return NotFound();
             }
 
             return NoContent();

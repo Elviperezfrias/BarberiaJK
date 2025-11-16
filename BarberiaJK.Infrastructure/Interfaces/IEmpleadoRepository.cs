@@ -2,6 +2,7 @@
 
 namespace BarberiaJK.Infrastructure.Interfaces
 {
+    // ID EMPLEADO REPOSITORY
     public interface IEmpleadoRepository
     {
         Task<IEnumerable<Empleado>> GetAllAsync();

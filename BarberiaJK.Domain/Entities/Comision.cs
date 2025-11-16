@@ -1,10 +1,12 @@
 ﻿using BarberiaJK.Domain.Core;
 
 namespace BarberiaJK.Domain.Entities
+
+    // COMICION
 {
     public class Comision : BaseEntity
     {
-        public int IdComision { get; set; } // PK real
+        public int IdComision { get; set; }
 
         public int IdEmpleado { get; set; }
         public Empleado? Empleado { get; set; }
