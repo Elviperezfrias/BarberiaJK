@@ -1,10 +1,10 @@
 ﻿using BarberiaJK.Domain.Core;
 
 namespace BarberiaJK.Domain.Repository
-{
+{ // CLIENTE REPOSITORY
     public class Cliente : BaseEntity
         {
-            public int IdCliente { get; set; }   // PK real de la BD
+            public int IdCliente { get; set; }   
             public string Nombre { get; set; } = string.Empty;
             public string Telefono { get; set; } = string.Empty;
         

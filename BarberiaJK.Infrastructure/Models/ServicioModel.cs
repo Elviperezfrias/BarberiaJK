@@ -1,5 +1,5 @@
 ﻿namespace BarberiaJK.Infrastructure.Models
-{
+{// SERVICIO MODEL
     public class ServicioModel
     {
         public string Nombre { get; set; } = string.Empty;

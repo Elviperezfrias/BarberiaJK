@@ -4,6 +4,8 @@ using BarberiaJK.Application.Dtos.Departament;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+
+// DEPARTAMENT SERVICE 
 namespace BarberiaJK.Application.Contract
 {
     public interface IDepartamentService

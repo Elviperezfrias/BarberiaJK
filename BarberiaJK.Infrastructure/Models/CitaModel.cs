@@ -2,6 +2,7 @@
 
 namespace BarberiaJK.Infrastructure.Models
 {
+    //MODELO CITA
     public class CitaModel
     {
         public int IdCliente { get; set; }

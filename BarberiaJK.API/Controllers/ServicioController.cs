@@ -11,6 +11,7 @@ namespace BarberiaJK.API.Controllers
     {
         private readonly BarberiaContext _context;
 
+
         public ServicioController(BarberiaContext context)
         {
             _context = context;
@@ -22,6 +23,7 @@ namespace BarberiaJK.API.Controllers
             return await _context.Servicios.ToListAsync();
         }
 
+
         [HttpGet("{id}")]
         public async Task<ActionResult<Servicio>> GetServicio(int id)
         {
@@ -29,6 +31,7 @@ namespace BarberiaJK.API.Controllers
 
             if (servicio == null)
                 return NotFound();
+
 
             return servicio;
         }
@@ -51,6 +54,7 @@ namespace BarberiaJK.API.Controllers
             _context.Entry(servicio).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
+
             return NoContent();
         }
 
@@ -64,6 +68,8 @@ namespace BarberiaJK.API.Controllers
 
             _context.Servicios.Remove(servicio);
             await _context.SaveChangesAsync();
+
+
 
             return NoContent();
         }

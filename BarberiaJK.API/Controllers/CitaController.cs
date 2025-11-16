@@ -16,18 +16,33 @@ namespace BarberiaJK.API.Controllers
             _context = context;
         }
 
-        // GET ALL
+        // =======================
+        //      GET ALL (DTO)
+        // =======================
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Cita>>> GetCitas()
+        public async Task<ActionResult<IEnumerable<CitaDto>>> GetCitas()
         {
-            return await _context.Citas
+            var citas = await _context.Citas
                 .Include(c => c.Cliente)
                 .Include(c => c.Empleado)
                 .Include(c => c.Servicio)
+                .Select(c => new CitaDto
+                {
+                    Id = c.IdCita,
+                    FechaHoraInicio = c.FechaHoraInicio,
+                    FechaHoraFin = c.FechaHoraFin,
+                    Cliente = c.Cliente!.Nombre,
+                    Empleado = c.Empleado!.Nombre,
+                    Servicio = c.Servicio!.Nombre
+                })
                 .ToListAsync();
+
+            return Ok(citas);
         }
 
-        // GET BY ID
+        // =======================
+        //        GET BY ID
+        // =======================
         [HttpGet("{id}")]
         public async Task<ActionResult<Cita>> GetCita(int id)
         {
@@ -40,45 +55,97 @@ namespace BarberiaJK.API.Controllers
             if (cita == null)
                 return NotFound();
 
-            return cita;
+            return Ok(cita);
         }
 
-        // POST
+        // =======================
+        //          POST
+        // =======================
         [HttpPost]
         public async Task<ActionResult<Cita>> PostCita(Cita cita)
         {
-            _context.Citas.Add(cita);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetCita), new { id = cita.IdCita }, cita);
+            try
+            {
+                _context.Citas.Add(cita);
+                await _context.SaveChangesAsync();
+                return CreatedAtAction(nameof(GetCita), new { id = cita.IdCita }, cita);
+            }
+            catch (DbUpdateException)
+            {
+                return StatusCode(500, "Error al guardar la cita en la base de datos.");
+            }
         }
 
-        // PUT
+        // =======================
+        //           PUT
+        // =======================
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCita(int id, Cita cita)
         {
             if (id != cita.IdCita)
-                return BadRequest();
+                return BadRequest("El ID no coincide.");
 
-            _context.Entry(cita).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            var citaDb = await _context.Citas.FindAsync(id);
+
+            if (citaDb == null)
+                return NotFound();
+
+            // Actualiza solo propiedades reales
+            citaDb.FechaHoraInicio = cita.FechaHoraInicio;
+            citaDb.FechaHoraFin = cita.FechaHoraFin;
+            citaDb.IdCliente = cita.IdCliente;
+            citaDb.IdEmpleado = cita.IdEmpleado;
+            citaDb.IdServicio = cita.IdServicio;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                return StatusCode(500, "Error al actualizar la cita.");
+            }
 
             return NoContent();
         }
 
-        // DELETE
+        // =======================
+        //         DELETE
+        // =======================
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCita(int id)
         {
-            var cita = await _context.Citas.FirstOrDefaultAsync(c => c.IdCita == id);
+            var cita = await _context.Citas.FindAsync(id);
 
             if (cita == null)
                 return NotFound();
 
             _context.Citas.Remove(cita);
-            await _context.SaveChangesAsync();
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                return StatusCode(500, "Error al eliminar la cita.");
+            }
 
             return NoContent();
         }
     }
+
+    // =======================
+    //           DTO
+    // =======================
+    public class CitaDto
+    {
+        public int Id { get; set; }
+        public DateTime FechaHoraInicio { get; set; }
+        public DateTime FechaHoraFin { get; set; }
+        public string Cliente { get; set; } = string.Empty;
+        public string Empleado { get; set; } = string.Empty;
+        public string Servicio { get; set; } = string.Empty;  
+    }
+
 }

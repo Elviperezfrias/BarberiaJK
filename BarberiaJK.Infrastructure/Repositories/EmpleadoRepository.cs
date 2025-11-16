@@ -4,6 +4,7 @@ using BarberiaJK.Infrastructure.Context;
 using BarberiaJK.Infrastructure.Core;
 
 namespace BarberiaJK.Infrastructure.Repositories
+// EMPLEADO REPOSITORY
 {
     public class EmpleadoRepository : BaseRepository<Empleado>, IEmpleadoRepository
     {

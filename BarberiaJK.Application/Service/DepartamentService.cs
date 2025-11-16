@@ -6,6 +6,7 @@ using BarberiaJK.Infrastructure.Core;
 
 namespace BarberiaJK.Application.Service
 {
+    // DEPARTAMENT SERVICE Y HERENCIA DE BASESERVICE
     public class DepartamentService
         : BaseService<Departament, DepartamentDto>, IDepartamentService
     {

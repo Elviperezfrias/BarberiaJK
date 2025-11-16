@@ -18,21 +18,21 @@ namespace BarberiaJK.Infrastructure.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // ====== ASIGNAR NOMBRES DE TABLAS (EVITA ERROR "Citas") ======
+            // ====== ASIGNAR NOMBRES DE TABLAS 
             modelBuilder.Entity<Cliente>().ToTable("Cliente");
             modelBuilder.Entity<Empleado>().ToTable("Empleado");
             modelBuilder.Entity<Servicio>().ToTable("Servicio");
             modelBuilder.Entity<Cita>().ToTable("Cita");
             modelBuilder.Entity<Comision>().ToTable("Comision");
 
-            // ====== CONFIGURACIÓN DE PK ======
+            // ====== CONFIGURACIÓN
             modelBuilder.Entity<Cliente>().HasKey(c => c.IdCliente);
             modelBuilder.Entity<Empleado>().HasKey(e => e.IdEmpleado);
             modelBuilder.Entity<Servicio>().HasKey(s => s.IdServicio);
             modelBuilder.Entity<Cita>().HasKey(c => c.IdCita);
             modelBuilder.Entity<Comision>().HasKey(c => c.IdComision);
 
-            // ====== RELACIONES ======
+            // ====== RELACIONES ============================================================
             modelBuilder.Entity<Cita>()
                 .HasOne(c => c.Cliente)
                 .WithMany()
