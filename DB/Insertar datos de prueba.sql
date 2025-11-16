@@ -10,11 +10,11 @@ GO
 -- CLIENTES (5)
 ---------------------------------------------------------
 INSERT INTO Cliente (Nombre, Telefono) VALUES
-('Juan Pérez', '809-434-1431'),
-('María López', '829-272-3422'),
-('Carlos Gómez', '849-433-8933'),
-('Ana Rodríguez', '809-474-4984'),
-('Luis Martínez', '829-555-5555');
+('Juan PÃ©rez', '809-434-1431'),
+('MarÃ­a LÃ³pez', '829-272-3422'),
+('Carlos GÃ³mez', '849-433-8933'),
+('Ana RodrÃ­guez', '809-474-4984'),
+('Luis MartÃ­nez', '829-545-5675');
 GO
 
 ---------------------------------------------------------
@@ -22,10 +22,10 @@ GO
 ---------------------------------------------------------
 INSERT INTO Empleado (Nombre, PorcentajeComision) VALUES
 ('Pedro Barber', 10.00),
-('José Estilista', 12.50),
+('JosÃ© Estilista', 12.50),
 ('Manuel Cortador', 15.00),
 ('Rosa Colorista', 8.00),
-('Sofía Hair Artist', 20.00);
+('SofÃ­a Hair Artist', 20.00);
 GO
 
 ---------------------------------------------------------
