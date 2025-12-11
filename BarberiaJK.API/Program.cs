@@ -1,34 +1,80 @@
 using BarberiaJK.Domain.Repository;
-using Microsoft.EntityFrameworkCore;
 using BarberiaJK.Infrastructure.Context;
 using BarberiaJK.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ? CONFIGURAR LA CONEXIÓN A LA BASE DE DATOS 
+// ---------------------------
+// Configuración JWT
+// ---------------------------
+var jwtSettings = builder.Configuration.GetSection("Jwt");
+var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
+
+// ---------------------------
+// Servicios
+// ---------------------------
+
+// Configurar la conexión a la base de datos
 builder.Services.AddDbContext<BarberiaContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// ? REGISTRAR LOS REPOSITORIOS 
+
 builder.Services.AddScoped<IEmpleadoRepository, EmpleadoRepository>();
 
-// Add services to the container. 
 builder.Services.AddControllers();
 
-// ? CONFIGURAR SWAGGER / OPENAPI 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", builder =>
+    {
+        builder.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader();
+    });
+});
+
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtSettings["Issuer"],
+        ValidAudience = jwtSettings["Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(key)
+    };
+});
+
+// ---------------------------
+// Construir app
+// ---------------------------
 var app = builder.Build();
 
-// ? PROBAR LA CONEXIÓN A LA BASE DE DATOS AL INICIAR 
+// ---------------------------
+// Probar conexión a la base de datos
+// ---------------------------
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<BarberiaContext>();
     try
     {
-        var canConnect = context.Database.CanConnect();
-        if (canConnect)
+        if (context.Database.CanConnect())
         {
             Console.WriteLine("? Conexión a la base de datos exitosa!");
             Console.WriteLine($"  Base de datos: {context.Database.GetDbConnection().Database}");
@@ -44,15 +90,25 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// Configure the HTTP request pipeline. 
+// ---------------------------
+// Middleware pipeline
+// ---------------------------
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseStaticFiles();
 app.UseDeveloperExceptionPage();
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 app.UseAuthorization();
+
+
+app.UseCors("AllowAll");
+
 app.MapControllers();
 
 app.Run();

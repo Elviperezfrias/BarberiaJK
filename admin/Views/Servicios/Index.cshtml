@@ -1,0 +1,253 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Servicios - Barbería JK</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f4f4f4;
+        }
+
+        .hero {
+            height: 300px;
+            background: linear-gradient(135deg, #111, #444);
+        }
+
+        .table-container {
+            margin-top: 40px;
+        }
+
+        .card-custom {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .btn-warning {
+            background-color: #f1c40f;
+            border: none;
+        }
+
+            .btn-warning:hover {
+                background-color: #d4ac0d;
+            }
+
+        .footer-custom {
+            margin-top: 80px;
+            padding: 40px;
+            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            color: white;
+            text-align: center;
+        }
+
+        .table thead {
+            background-color: #111;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HERO -->
+    <div class="hero position-relative text-white text-center">
+        <div style="position:absolute; inset:0; background-color: rgba(0,0,0,0.5);"></div>
+
+        <div class="d-flex flex-column justify-content-center align-items-center h-100 position-relative">
+            <h1 class="display-4 fw-bold">Gestión de Servicios</h1>
+            <p class="lead">Administra los servicios de Barbería JK</p>
+            <button class="btn btn-warning btn-lg mt-2" data-bs-toggle="modal" data-bs-target="#agregarServicioModal">
+                Agregar Servicio
+            </button>
+        </div>
+    </div>
+
+    <!-- CONTENIDO -->
+    <div class="container table-container">
+        <div class="card card-custom p-4">
+            <h3 class="fw-bold mb-3">Listado de servicios</h3>
+
+            <div class="table-responsive">
+                <table class="table table-striped table-hover" id="serviciosTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Precio</th>
+                            <th>Duración (min)</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- Modal Agregar Servicio -->
+    <div class="modal fade" id="agregarServicioModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title">Agregar Servicio</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formAgregarServicio">
+                        <div class="mb-3">
+                            <label class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="nombreServicio" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Precio</label>
+                            <input type="number" class="form-control" id="precioServicio" min="0" step="0.01" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Duración (minutos)</label>
+                            <input type="number" class="form-control" id="duracionServicio" min="0" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Guardar Servicio</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Editar Servicio -->
+    <div class="modal fade" id="editarServicioModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title">Editar Servicio</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formEditarServicio">
+                        <input type="hidden" id="editarIdServicio">
+                        <div class="mb-3">
+                            <label class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="editarNombreServicio" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Precio</label>
+                            <input type="number" class="form-control" id="editarPrecioServicio" min="0" step="0.01" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Duración (minutos)</label>
+                            <input type="number" class="form-control" id="editarDuracionServicio" min="0" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Actualizar Servicio</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- TU SCRIPT ORIGINAL SIN TOCAR -->
+    <script>
+        const API_URL = 'https://localhost:7106/api/servicio';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarServicios();
+
+            document.getElementById('formAgregarServicio').addEventListener('submit', async e => {
+                e.preventDefault();
+                const nombre = nombreServicio.value.trim();
+                const precio = parseFloat(precioServicio.value);
+                const duracion = parseInt(duracionServicio.value);
+
+                try {
+                    const res = await fetch(API_URL, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({nombre, precio, duracionMinutos: duracion})
+                    });
+                    if(!res.ok) throw new Error();
+                    alert('Servicio agregado correctamente');
+                    cargarServicios();
+                    bootstrap.Modal.getOrCreateInstance(document.getElementById('agregarServicioModal')).hide();
+                    formAgregarServicio.reset();
+                } catch {
+                    alert('Error al agregar servicio');
+                }
+            });
+
+            document.getElementById('formEditarServicio').addEventListener('submit', async e => {
+                e.preventDefault();
+                const id = editarIdServicio.value;
+
+                const data = {
+                    idServicio: id,
+                    nombre: editarNombreServicio.value,
+                    precio: parseFloat(editarPrecioServicio.value),
+                    duracionMinutos: parseInt(editarDuracionServicio.value)
+                };
+
+                try {
+                    const res = await fetch(`${API_URL}/${id}`, {
+                        method: 'PUT',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(data)
+                    });
+                    if(!res.ok) throw new Error();
+                    alert('Servicio actualizado');
+                    cargarServicios();
+                    bootstrap.Modal.getOrCreateInstance(document.getElementById('editarServicioModal')).hide();
+                } catch {
+                    alert('Error al actualizar servicio');
+                }
+            });
+        });
+
+        async function cargarServicios() {
+            const res = await fetch(API_URL);
+            const servicios = await res.json();
+            const tbody = document.querySelector('#serviciosTable tbody');
+            tbody.innerHTML = '';
+            servicios.forEach(s => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${s.idServicio}</td>
+                        <td>${s.nombre}</td>
+                        <td>${s.precio.toFixed(2)}</td>
+                        <td>${s.duracionMinutos}</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm" onclick="abrirEditarServicio(${s.idServicio}, '${s.nombre}', ${s.precio}, ${s.duracionMinutos})">Editar</button>
+                            <button class="btn btn-danger btn-sm" onclick="eliminarServicio(${s.idServicio})">Eliminar</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function abrirEditarServicio(id, nombre, precio, duracion) {
+            editarIdServicio.value = id;
+            editarNombreServicio.value = nombre;
+            editarPrecioServicio.value = precio;
+            editarDuracionServicio.value = duracion;
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('editarServicioModal')).show();
+        }
+
+        async function eliminarServicio(id) {
+            if (!confirm('¿Eliminar este servicio?')) return;
+            const res = await fetch(`${API_URL}/${id}`, {method:'DELETE'});
+            if(res.ok) {
+                alert('Servicio eliminado');
+                cargarServicios();
+            } else {
+                alert('Error al eliminar');
+            }
+        }
+    </script>
+
+</body>
+</html>

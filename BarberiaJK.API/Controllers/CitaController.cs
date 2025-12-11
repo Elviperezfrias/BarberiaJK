@@ -1,7 +1,9 @@
-﻿using BarberiaJK.Domain.Entities;
+﻿using BarberiaJK.Application.DTOs;
+using BarberiaJK.Domain.Entities;
 using BarberiaJK.Infrastructure.Context;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
 namespace BarberiaJK.API.Controllers
 {
@@ -16,9 +18,9 @@ namespace BarberiaJK.API.Controllers
             _context = context;
         }
 
-        // =======================
-        //      GET ALL (DTO)
-        // =======================
+        // ============================
+        // GET ALL
+        // ============================
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CitaDto>>> GetCitas()
         {
@@ -31,6 +33,9 @@ namespace BarberiaJK.API.Controllers
                     Id = c.IdCita,
                     FechaHoraInicio = c.FechaHoraInicio,
                     FechaHoraFin = c.FechaHoraFin,
+                    IdCliente = c.IdCliente,
+                    IdEmpleado = c.IdEmpleado,
+                    IdServicio = c.IdServicio,
                     Cliente = c.Cliente!.Nombre,
                     Empleado = c.Empleado!.Nombre,
                     Servicio = c.Servicio!.Nombre
@@ -40,112 +45,132 @@ namespace BarberiaJK.API.Controllers
             return Ok(citas);
         }
 
-        // =======================
-        //        GET BY ID
-        // =======================
+        // ============================
+        // GET BY ID
+        // ============================
         [HttpGet("{id}")]
         public async Task<ActionResult<Cita>> GetCita(int id)
         {
-            var cita = await _context.Citas
-                .Include(c => c.Cliente)
-                .Include(c => c.Empleado)
-                .Include(c => c.Servicio)
-                .FirstOrDefaultAsync(c => c.IdCita == id);
-
-            if (cita == null)
-                return NotFound();
-
+            var cita = await _context.Citas.FindAsync(id);
+            if (cita == null) return NotFound();
             return Ok(cita);
         }
 
-        // =======================
-        //          POST
-        // =======================
+        // ============================
+        // POST
+        // ============================
         [HttpPost]
-        public async Task<ActionResult<Cita>> PostCita(Cita cita)
+        [HttpPost]
+        public async Task<ActionResult<CitaDto>> PostCita([FromBody] CitaCreateDto dto)
         {
-            try
+            var cliente = await _context.Clientes.FindAsync(dto.IdCliente);
+            var empleado = await _context.Empleados.FindAsync(dto.IdEmpleado);
+            var servicio = await _context.Servicios.FindAsync(dto.IdServicio);
+
+            if (cliente == null) return BadRequest("Cliente no encontrado");
+            if (empleado == null) return BadRequest("Empleado no encontrado");
+            if (servicio == null) return BadRequest("Servicio no encontrado");
+
+            
+            var cita = new Cita
             {
-                _context.Citas.Add(cita);
-                await _context.SaveChangesAsync();
-                return CreatedAtAction(nameof(GetCita), new { id = cita.IdCita }, cita);
-            }
-            catch (DbUpdateException)
+                IdCliente = dto.IdCliente,
+                IdEmpleado = dto.IdEmpleado,
+                IdServicio = dto.IdServicio,
+                FechaHoraInicio = dto.FechaHoraInicio,
+                FechaHoraFin = dto.FechaHoraFin
+            };
+
+            _context.Citas.Add(cita);
+            await _context.SaveChangesAsync();
+
+           
+            var citaDto = new CitaDto
             {
-                return StatusCode(500, "Error al guardar la cita en la base de datos.");
-            }
+                Id = cita.IdCita,
+                IdCliente = dto.IdCliente,
+                IdEmpleado = dto.IdEmpleado,
+                IdServicio = dto.IdServicio,
+                FechaHoraInicio = dto.FechaHoraInicio,
+                FechaHoraFin = dto.FechaHoraFin,
+                Cliente = cliente.Nombre,
+                Empleado = empleado.Nombre,
+                Servicio = servicio.Nombre
+            };
+
+            return Ok(citaDto);
         }
 
-        // =======================
-        //           PUT
-        // =======================
+
+
+
+        // ============================
+        // PUT (CORREGIDO)
+        // ============================
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCita(int id, Cita cita)
+        public async Task<IActionResult> PutCita(int id, [FromBody] CitaUpdateDto dto)
         {
-            if (id != cita.IdCita)
-                return BadRequest("El ID no coincide.");
+            var cita = await _context.Citas.FindAsync(id);
+            if (cita == null)
+                return NotFound("No existe la cita");
 
-            var citaDb = await _context.Citas.FindAsync(id);
+         
+            var cliente = await _context.Clientes.FindAsync(dto.IdCliente);
+            var empleado = await _context.Empleados.FindAsync(dto.IdEmpleado);
+            var servicio = await _context.Servicios.FindAsync(dto.IdServicio);
 
-            if (citaDb == null)
-                return NotFound();
+            if (cliente == null) return BadRequest("Cliente no encontrado");
+            if (empleado == null) return BadRequest("Empleado no encontrado");
+            if (servicio == null) return BadRequest("Servicio no encontrado");
 
-            // Actualiza solo propiedades reales
-            citaDb.FechaHoraInicio = cita.FechaHoraInicio;
-            citaDb.FechaHoraFin = cita.FechaHoraFin;
-            citaDb.IdCliente = cita.IdCliente;
-            citaDb.IdEmpleado = cita.IdEmpleado;
-            citaDb.IdServicio = cita.IdServicio;
+           
+            cita.IdCliente = dto.IdCliente;
+            cita.IdEmpleado = dto.IdEmpleado;
+            cita.IdServicio = dto.IdServicio;
+            cita.FechaHoraInicio = dto.FechaHoraInicio;
+            cita.FechaHoraFin = dto.FechaHoraFin;
 
             try
             {
                 await _context.SaveChangesAsync();
+                return Ok("Cita actualizada correctamente");
             }
-            catch (DbUpdateException)
+            catch (Exception ex)
             {
-                return StatusCode(500, "Error al actualizar la cita.");
+                return BadRequest($"ERROR PUT: {ex.Message}");
             }
-
-            return NoContent();
         }
 
-        // =======================
-        //         DELETE
-        // =======================
+
+        // ============================
+        // DELETE
+        // ============================
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCita(int id)
         {
             var cita = await _context.Citas.FindAsync(id);
-
-            if (cita == null)
-                return NotFound();
+            if (cita == null) return NotFound();
 
             _context.Citas.Remove(cita);
+            await _context.SaveChangesAsync();
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                return StatusCode(500, "Error al eliminar la cita.");
-            }
-
-            return NoContent();
+            return Ok("Cita eliminada");
         }
     }
 
-    // =======================
-    //           DTO
-    // =======================
+    // ============================
+    // DTO
+    // ============================
     public class CitaDto
     {
         public int Id { get; set; }
         public DateTime FechaHoraInicio { get; set; }
         public DateTime FechaHoraFin { get; set; }
+        public int IdCliente { get; set; }
+        public int IdEmpleado { get; set; }
+        public int IdServicio { get; set; }
         public string Cliente { get; set; } = string.Empty;
         public string Empleado { get; set; } = string.Empty;
-        public string Servicio { get; set; } = string.Empty;  
+        public string Servicio { get; set; } = string.Empty;
     }
-
 }

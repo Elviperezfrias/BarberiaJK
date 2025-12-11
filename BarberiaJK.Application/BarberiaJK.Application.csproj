@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BarberiaJK.API\BarberiaJK.API.csproj" />
     <ProjectReference Include="..\BarberiaJK.Domain\BarberiaJK.Domain.csproj" />
     <ProjectReference Include="..\BarberiaJK.Infrastructure\BarberiaJK.Infrastructure.csproj" />
   </ItemGroup>

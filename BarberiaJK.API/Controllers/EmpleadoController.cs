@@ -16,11 +16,12 @@ namespace BarberiaIX.API.Controllers
             _context = context;
         }
 
-        // GET: api/Empleado
+        // GET: api/Empleado (todos)
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Empleado>>> GetEmpleados()
         {
-            return await _context.Empleados.ToListAsync();
+            return await _context.Empleados
+                .ToListAsync(); // elimina el filtro Activo
         }
 
         // GET: api/Empleado/5
@@ -38,23 +39,7 @@ namespace BarberiaIX.API.Controllers
         }
 
         // GET: api/Empleado/5/comisiones
-        [HttpGet("{id}/comisiones")]
-        public async Task<ActionResult<IEnumerable<Comision>>> GetComisionesByEmpleado(int id)
-        {
-            var empleado = await _context.Empleados.FindAsync(id);
-            if (empleado == null)
-            {
-                return NotFound(new { message = $"Empleado con ID {id} no encontrado" });
-            }
-
-            var comisiones = await _context.Comisiones
-                .Include(c => c.Cita!)
-                .ThenInclude(cita => cita.Servicio!)
-                .Where(c => c.IdEmpleado == id)
-                .ToListAsync();
-
-            return comisiones;
-        }
+     
 
         // POST: api/Empleado
         [HttpPost]
@@ -64,6 +49,8 @@ namespace BarberiaIX.API.Controllers
             {
                 return BadRequest(new { message = "El porcentaje de comisión debe estar entre 0 y 100" });
             }
+
+            empleado.Activo = true;
 
             _context.Empleados.Add(empleado);
             await _context.SaveChangesAsync();
@@ -76,7 +63,7 @@ namespace BarberiaIX.API.Controllers
         public async Task<IActionResult> PutEmpleado(int id, Empleado empleado)
         {
             if (id != empleado.IdEmpleado)
-                return BadRequest("El id no coincide.");
+                return BadRequest("El ID no coincide.");
 
             _context.Entry(empleado).State = EntityState.Modified;
 
@@ -93,25 +80,37 @@ namespace BarberiaIX.API.Controllers
             return NoContent();
         }
 
-        // DELETE: api/Empleado/5
+        // DELETE: api/Empleado/5 (Soft Delete)
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEmpleado(int id)
         {
-            var empleado = await _context.Empleados.FindAsync(id);
-            if (empleado == null)
-            {
-                return NotFound(new { message = $"Empleado con ID {id} no encontrado" });
-            }
+            var empleado = await _context.Empleados
+                .FirstOrDefaultAsync(e => e.IdEmpleado == id);
 
-            _context.Empleados.Remove(empleado);
+            if (empleado == null)
+                return NotFound(new { message = $"Empleado con ID {id} no encontrado" });
+
+            // Soft Delete
+            empleado.Activo = false;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = $"Empleado {id} desactivado correctamente" });
+        }
+
+
+        // PUT: api/Empleado/activar/5
+        [HttpPut("{id}/activar")]
+        public async Task<IActionResult> ActivarEmpleado(int id)
+        {
+            var empleado = await _context.Empleados.FindAsync(id);
+
+            if (empleado == null)
+                return NotFound();
+
+            empleado.Activo = true;
             await _context.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private bool EmpleadoExists(int id)
-        {
-            return _context.Empleados.Any(e => e.IdEmpleado == id);
         }
     }
 }
