@@ -1,11 +1,11 @@
-﻿using BarberiaJK.Domain.Core;
+﻿using BarberiaJK.Domain.Entities;
+using System;
 
 namespace BarberiaJK.Domain.Entities
-    // CITA 
 {
-    public class Cita : BaseEntity
+    public class Cita
     {
-        public int IdCita { get; set; }  
+        public int IdCita { get; set; }
 
         public int IdCliente { get; set; }
         public Cliente? Cliente { get; set; }
@@ -15,7 +15,6 @@ namespace BarberiaJK.Domain.Entities
 
         public int IdServicio { get; set; }
         public Servicio Servicio { get; set; } = null!;
-
 
         public DateTime FechaHoraInicio { get; set; }
         public DateTime FechaHoraFin { get; set; }

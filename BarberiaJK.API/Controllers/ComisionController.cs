@@ -63,6 +63,7 @@ namespace BarberiaJK.API.Controllers
 
             return NoContent();
         }
+
         //GET: api/Comision/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteComision(int id)

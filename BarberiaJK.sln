@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BarberiaJK.Infrastructure",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BarberiaJK.Application", "BarberiaJK.Application\BarberiaJK.Application.csproj", "{F7F8D94A-9082-4A22-B4AC-B51A5B847F4B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "admin", "admin\admin.csproj", "{F9609D59-F58F-4163-AE67-5CF429C24636}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{F7F8D94A-9082-4A22-B4AC-B51A5B847F4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F7F8D94A-9082-4A22-B4AC-B51A5B847F4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F7F8D94A-9082-4A22-B4AC-B51A5B847F4B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9609D59-F58F-4163-AE67-5CF429C24636}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9609D59-F58F-4163-AE67-5CF429C24636}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9609D59-F58F-4163-AE67-5CF429C24636}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9609D59-F58F-4163-AE67-5CF429C24636}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

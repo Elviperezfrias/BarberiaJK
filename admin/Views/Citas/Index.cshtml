@@ -1,0 +1,300 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Citas - Barbería JK</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f4f4f4;
+        }
+
+        .hero {
+            height: 300px;
+            background: linear-gradient(135deg, #111, #444);
+        }
+
+        .table-container {
+            margin-top: 40px;
+        }
+
+        .card-custom {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .btn-warning {
+            background-color: #f1c40f;
+            border: none;
+        }
+
+            .btn-warning:hover {
+                background-color: #d4ac0d;
+            }
+
+        .footer-custom {
+            margin-top: 80px;
+            padding: 40px;
+            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            color: white;
+            text-align: center;
+        }
+
+        .table thead {
+            background-color: #111;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HERO -->
+    <div class="hero position-relative text-white text-center">
+        <div style="position:absolute; inset:0; background-color: rgba(0,0,0,0.5);"></div>
+        <div class="d-flex flex-column justify-content-center align-items-center h-100 position-relative">
+            <h1 class="display-4 fw-bold">Gestión de Citas</h1>
+            <p class="lead">Administra las citas de Barbería JK</p>
+            <button class="btn btn-warning btn-lg mt-2" data-bs-toggle="modal" data-bs-target="#agregarCitaModal">
+                Agregar Cita
+            </button>
+        </div>
+    </div>
+
+    <!-- CONTENIDO -->
+    <div class="container table-container">
+        <div class="card card-custom p-4">
+            <h3 class="fw-bold mb-3">Listado de citas</h3>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover" id="citasTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Fecha Inicio</th>
+                            <th>Fecha Fin</th>
+                            <th>Cliente</th>
+                            <th>Empleado</th>
+                            <th>Servicio</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Agregar Cita -->
+    <div class="modal fade" id="agregarCitaModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title">Agregar Cita</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formAgregarCita">
+                        <div class="mb-3">
+                            <label class="form-label">Fecha y Hora Inicio</label>
+                            <input type="datetime-local" class="form-control" id="fechaInicioCita" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Fecha y Hora Fin</label>
+                            <input type="datetime-local" class="form-control" id="fechaFinCita" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Cliente</label>
+                            <select class="form-control" id="clienteCita" required></select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Empleado</label>
+                            <select class="form-control" id="empleadoCita" required></select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Servicio</label>
+                            <select class="form-control" id="servicioCita" required></select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 mt-3">Guardar Cita</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Editar Cita -->
+    <div class="modal fade" id="editarCitaModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title">Editar Cita</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formEditarCita">
+                        <input type="hidden" id="editarIdCita">
+                        <div class="mb-3">
+                            <label class="form-label">Fecha y Hora Inicio</label>
+                            <input type="datetime-local" class="form-control" id="editarFechaInicioCita" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Fecha y Hora Fin</label>
+                            <input type="datetime-local" class="form-control" id="editarFechaFinCita" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Cliente</label>
+                            <select class="form-control" id="editarClienteCita" required></select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Empleado</label>
+                            <select class="form-control" id="editarEmpleadoCita" required></select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Servicio</label>
+                            <select class="form-control" id="editarServicioCita" required></select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 mt-3">Actualizar Cita</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarSelectsCita();
+            cargarCitas();
+
+            // Agregar cita
+            document.getElementById('formAgregarCita').addEventListener('submit', async e => {
+                e.preventDefault();
+                const fechaInicio = fechaInicioCita.value;
+                const fechaFin = fechaFinCita.value;
+                const idCliente = parseInt(clienteCita.value);
+                const idEmpleado = parseInt(empleadoCita.value);
+                const idServicio = parseInt(servicioCita.value);
+
+                try {
+                    const res = await fetch('https://localhost:7106/api/cita', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({fechaHoraInicio: fechaInicio, fechaHoraFin: fechaFin, idCliente, idEmpleado, idServicio})
+                    });
+                    if(!res.ok) throw new Error();
+                    alert('Cita agregada correctamente');
+                    cargarCitas();
+                    bootstrap.Modal.getOrCreateInstance(agregarCitaModal).hide();
+                    formAgregarCita.reset();
+                } catch {
+                    alert('No se pudo agregar la cita');
+                }
+            });
+
+            // Editar cita
+            document.getElementById('formEditarCita').addEventListener('submit', async e => {
+                e.preventDefault();
+                const id = parseInt(editarIdCita.value);
+                const fechaInicio = editarFechaInicioCita.value;
+                const fechaFin = editarFechaFinCita.value;
+                const idCliente = parseInt(editarClienteCita.value);
+                const idEmpleado = parseInt(editarEmpleadoCita.value);
+                const idServicio = parseInt(editarServicioCita.value);
+
+                try {
+                    const res = await fetch(`https://localhost:7106/api/cita/${id}`, {
+                        method: 'PUT',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({idCita:id, fechaHoraInicio:fechaInicio, fechaHoraFin:fechaFin, idCliente, idEmpleado, idServicio})
+                    });
+                    if(!res.ok) throw new Error();
+                    alert('Cita actualizada correctamente');
+                    cargarCitas();
+                    bootstrap.Modal.getOrCreateInstance(editarCitaModal).hide();
+                } catch {
+                    alert('No se pudo actualizar la cita');
+                }
+            });
+        });
+
+        async function cargarSelectsCita() {
+            try {
+                const [resClientes, resEmpleados, resServicios] = await Promise.all([
+                    fetch('https://localhost:7106/api/cliente'),
+                    fetch('https://localhost:7106/api/empleado'),
+                    fetch('https://localhost:7106/api/servicio')
+                ]);
+                const [clientes, empleados, servicios] = await Promise.all([resClientes.json(), resEmpleados.json(), resServicios.json()]);
+
+                [clienteCita, clienteCitaEdit, empleadoCita, empleadoCitaEdit, servicioCita, servicioCitaEdit] = [
+                    clienteCita, editarClienteCita, empleadoCita, editarEmpleadoCita, servicioCita, editarServicioCita
+                ];
+
+                [clienteCita, editarClienteCita, empleadoCita, editarEmpleadoCita, servicioCita, editarServicioCita].forEach(el => el.innerHTML='');
+
+                clientes.forEach(c => {
+                    clienteCita.appendChild(new Option(c.nombre, c.idCliente));
+                    editarClienteCita.appendChild(new Option(c.nombre, c.idCliente));
+                });
+                empleados.forEach(e => {
+                    empleadoCita.appendChild(new Option(e.nombre, e.idEmpleado));
+                    editarEmpleadoCita.appendChild(new Option(e.nombre, e.idEmpleado));
+                });
+                servicios.forEach(s => {
+                    servicioCita.appendChild(new Option(s.nombre, s.idServicio));
+                    editarServicioCita.appendChild(new Option(s.nombre, s.idServicio));
+                });
+            } catch {
+                alert('No se pudieron cargar clientes, empleados o servicios');
+            }
+        }
+
+        async function cargarCitas() {
+            try {
+                const res = await fetch('https://localhost:7106/api/cita');
+                const citas = await res.json();
+                const tbody = document.querySelector('#citasTable tbody');
+                tbody.innerHTML = '';
+                citas.forEach(c => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${c.id}</td>
+                        <td>${new Date(c.fechaHoraInicio).toLocaleString()}</td>
+                        <td>${new Date(c.fechaHoraFin).toLocaleString()}</td>
+                        <td>${c.cliente}</td>
+                        <td>${c.empleado}</td>
+                        <td>${c.servicio}</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm" onclick="abrirEditarCita(${c.id}, '${c.fechaHoraInicio}', '${c.fechaHoraFin}', ${c.idCliente}, ${c.idEmpleado}, ${c.idServicio})">Editar</button>
+                            <button class="btn btn-danger btn-sm" onclick="eliminarCita(${c.id})">Eliminar</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch {
+                alert('No se pudieron cargar las citas');
+            }
+        }
+
+        function abrirEditarCita(id, fechaInicio, fechaFin, idCliente, idEmpleado, idServicio) {
+            editarIdCita.value = id;
+            editarFechaInicioCita.value = fechaInicio;
+            editarFechaFinCita.value = fechaFin;
+            editarClienteCita.value = idCliente;
+            editarEmpleadoCita.value = idEmpleado;
+            editarServicioCita.value = idServicio;
+            bootstrap.Modal.getOrCreateInstance(editarCitaModal).show();
+        }
+
+        async function eliminarCita(id) {
+            if(!confirm('¿Estás seguro de eliminar esta cita?')) return;
+            await fetch(`https://localhost:7106/api/cita/${id}`, {method:'DELETE'});
+            cargarCitas();
+        }
+    </script>
+
+</body>
+</html>
